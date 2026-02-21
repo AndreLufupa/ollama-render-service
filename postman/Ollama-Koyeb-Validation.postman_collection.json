@@ -1,0 +1,280 @@
+{
+  "info": {
+    "_postman_id": "2f4a8fd1-3c4a-4a5f-9c8b-1f90d7c6f3d1",
+    "name": "Ollama Koyeb Validation",
+    "description": "Collection para validar deploy do Ollama no Koyeb (health, modelos, geração e embeddings).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://SEU-APP.koyeb.app" },
+    { "key": "llmModel1", "value": "llama3.2:3b" },
+    { "key": "llmModel2", "value": "qwen2.5:3b" },
+    { "key": "llmModel3", "value": "mistral:7b" },
+    { "key": "embedModel1", "value": "mxbai-embed-large" },
+    { "key": "embedModel2", "value": "bge-m3" },
+    { "key": "embedModel3", "value": "snowflake-arctic-embed2" },
+    { "key": "testPrompt", "value": "Explique em 2 linhas o que é um contrato de prestação de serviços." },
+    { "key": "embedPrompt", "value": "Direito administrativo e responsabilidade civil do Estado" }
+  ],
+  "item": [
+    {
+      "name": "01 - Health Check (/api/tags)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/tags",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "tags"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Resposta contém campo models', function () {",
+              "  pm.expect(json).to.have.property('models');",
+              "  pm.expect(Array.isArray(json.models)).to.eql(true);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 - Generate (LLM 1)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"{{llmModel1}}\",\n  \"prompt\": \"{{testPrompt}}\",\n  \"stream\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/generate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "generate"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Resposta contém texto gerado', function () {",
+              "  pm.expect(json).to.have.property('response');",
+              "  pm.expect(json.response).to.be.a('string');",
+              "  pm.expect(json.response.length).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 - Generate (LLM 2)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"{{llmModel2}}\",\n  \"prompt\": \"{{testPrompt}}\",\n  \"stream\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/generate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "generate"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Resposta contém texto gerado', function () {",
+              "  pm.expect(json).to.have.property('response');",
+              "  pm.expect(json.response).to.be.a('string');",
+              "  pm.expect(json.response.length).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 - Generate (LLM 3)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"{{llmModel3}}\",\n  \"prompt\": \"{{testPrompt}}\",\n  \"stream\": false\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/generate",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "generate"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Resposta contém texto gerado', function () {",
+              "  pm.expect(json).to.have.property('response');",
+              "  pm.expect(json.response).to.be.a('string');",
+              "  pm.expect(json.response.length).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 - Embeddings (Model 1)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"{{embedModel1}}\",\n  \"prompt\": \"{{embedPrompt}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/embeddings",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "embeddings"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Resposta contém vetor embedding', function () {",
+              "  pm.expect(json).to.have.property('embedding');",
+              "  pm.expect(Array.isArray(json.embedding)).to.eql(true);",
+              "  pm.expect(json.embedding.length).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 - Embeddings (Model 2)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"{{embedModel2}}\",\n  \"prompt\": \"{{embedPrompt}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/embeddings",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "embeddings"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Resposta contém vetor embedding', function () {",
+              "  pm.expect(json).to.have.property('embedding');",
+              "  pm.expect(Array.isArray(json.embedding)).to.eql(true);",
+              "  pm.expect(json.embedding.length).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 - Embeddings (Model 3)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"model\": \"{{embedModel3}}\",\n  \"prompt\": \"{{embedPrompt}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/embeddings",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "embeddings"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 200', function () {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "const json = pm.response.json();",
+              "pm.test('Resposta contém vetor embedding', function () {",
+              "  pm.expect(json).to.have.property('embedding');",
+              "  pm.expect(Array.isArray(json.embedding)).to.eql(true);",
+              "  pm.expect(json.embedding.length).to.be.above(0);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
